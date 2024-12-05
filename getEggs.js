@@ -1,77 +1,38 @@
-import { makeCompleteMessage } from "./completeMessage.js";
+import { getWifeResponse } from "./getResponse.js";
 
-const dozensOfEggsNeeded = 1;
-const bottlesOfMilkNeeded = 3;
-const whereToGetTheStuff = "Aldi";
-const storeHasMilk = false;
-
-const instruction = `Go to the ${whereToGetTheStuff} and get me ${dozensOfEggsNeeded} dozen of eggs. If they have bottles of milk get 3`;
-
-let isWifeAngry = true;
-let dozensOfEggsBought = 0;
 let bottlesOfMilkBought = 0;
+let bottlesOfMilkNeeded = 1;
+let eggsBought = 0;
+let eggsNeeded = 6;
 
-const doShopping = () => {
-  console.log(`Arrived at ${whereToGetTheStuff}`);
-  console.log("Doing the shopping");
+let storeHasEggs = true;
 
-  dozensOfEggsBought += 1;
+function getEggsAndMilk(storeName, thinksLikeAnEngineer) {
+  console.log(`going to ${storeName} by request of the overlord`);
 
-  if (storeHasMilk) {
-    console.log(`${whereToGetTheStuff} has milk`);
-
-    dozensOfEggsBought += 2;
-  } else {
-    console.log(`${whereToGetTheStuff} doesn't have milk`);
-  }
-  if (
-    ((storeHasMilk && bottlesOfMilkBought === bottlesOfMilkNeeded) ||
-      !storeHasMilk) &&
-    dozensOfEggsBought === dozensOfEggsNeeded
-  ) {
-    isWifeAngry = false;
-  } else {
-    isWifeAngry = true;
-  }
+  bottlesOfMilkBought = bottlesOfMilkBought + 1;
   console.log(
-    `you bought ${dozensOfEggsBought} dozens of eggs and ${bottlesOfMilkBought} bottles of milk`
+    `you now have ${bottlesOfMilkBought} bottles of milk and ${eggsBought} eggs`
   );
 
-  driveHome();
-};
+  if (storeHasEggs && thinksLikeAnEngineer) {
+    bottlesOfMilkBought = 6;
+  } else if (storeHasEggs && !thinksLikeAnEngineer) {
+    eggsBought = 6;
+  } else {
+    console.log(`no eggs at ${storeName}`);
+  }
 
-const driveHome = () => {
-  console.log("driving home");
-  travelSomewhere(3, "home");
-};
+  console.log(
+    `you now have ${bottlesOfMilkBought} bottles of milk and ${eggsBought} eggs`
+  );
 
-const driveToTheShops = () => {
-  console.log(`driving to ${whereToGetTheStuff}`);
-  travelSomewhere(5, "shops");
-};
+  return { eggs: eggsBought, milk: bottlesOfMilkBought };
+}
 
-const travelSomewhere = (timeToGetToDestination, destination) => {
-  let timeInSeconds = 0;
+function doWhatWifeTellsYou() {
+  const eggsAndMilk = getEggsAndMilk("Aldi", true);
+  getWifeResponse(eggsAndMilk, eggsNeeded, bottlesOfMilkNeeded, storeHasEggs);
+}
 
-  let interval = setInterval(() => {
-    timeInSeconds += 1;
-    if (timeInSeconds === timeToGetToDestination) {
-      clearInterval(interval);
-      if (destination === "home") {
-        console.log(makeCompleteMessage(isWifeAngry));
-      } else if (destination === "shops") {
-        doShopping();
-      }
-    } else {
-      console.log("driving");
-    }
-  }, 1000);
-};
-
-const doWhatYourWifeTellsYou = () => {
-  console.log(instruction);
-  console.log(`Going to ${whereToGetTheStuff}`);
-  driveToTheShops(5, "shops");
-};
-
-doWhatYourWifeTellsYou();
+doWhatWifeTellsYou();
